@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+/*arrow on hover*/
+.anibutton {
+  display: inline-block;
+  border-radius: 4px;
+  background-color: #f4511e;
+  border: none;
+  color: #FFFFFF;
+  text-align: center;
+  font-size: 28px;
+  padding: 20px;
+  width: 200px;
+  transition: all 0.5s;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.anibutton span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.anibutton span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.anibutton:hover span {
+  padding-right: 25px;
+}
+
+.anibutton:hover span:after {
+  opacity: 1;
+  right: 0;}
+  
+   .pressed {
+  display: inline-block;
+  padding: 15px 25px;
+  font-size: 24px;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: #fff;
+  background-color: #4CAF50;
+  border: none;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+<!--pressed buttons-->
+.pressed:hover {background-color: #3e8e41}
+
+.pressed:active {
+  background-color: #3e8e41;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+
+/*shadow on hover*/
+.shadbutton {
+    background-color: tomato;
+    border: none;
+    color: white;
+    padding: 15px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+}
+.shadbutton:hover {
+    box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24),0 17px 50px 0 rgba(0,0,0,0.19);
+}
+/*rounded buttons*/
+.roundbtn{border-radius:50%;
+height:100px;
+width:100px;}
+  </style></head>
+  <body>
+  <h2>Animated Button</h2>
+<button class="anibutton" style="vertical-align:middle"><span>Hover </span></button>
+
+ <h2>Animated Buttons - "Pressed Effect"</h2>
+<button class="pressed">Click Me</button>
+<h2>shadow on hover</h2>
+<button class="shadbutton">Shadow on Hover</button>
+<h2>rounded button and shadow on hover</h2>
+<button class="shadbutton roundbtn">hover</button>
+  </body>
+  </html>
