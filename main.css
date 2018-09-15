@@ -1,0 +1,21 @@
+body, html{
+    height : 100%;
+    margin : 0;
+
+}
+
+#event1{
+    background: url('code.svg')no-repeat;
+    background-size: cover;
+    margin-top: -300px;
+}
+
+body.event2{
+    background: url('event2.svg')no-repeat;
+    background-size: cover;
+    margin-top: -300px;
+}
+logo{
+    width : 10%;
+    height: 10%;
+}
