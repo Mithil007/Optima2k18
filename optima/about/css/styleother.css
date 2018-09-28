@@ -1,0 +1,73 @@
+@import url(https://fonts.googleapis.com/css?family=Merriweather:300,300i,400,400i,700,700i,900,900i);
+@import url(https://fonts.googleapis.com/css?family=Rubik:300,300i,400,400i,500,500i,700,700i,900,900i);
+
+
+
+
+
+
+
+.display-7 {
+  font-family: 'Rubik', sans-serif;
+  font-size: 1rem;
+}
+.display-7 > .mbr-iconfont {
+  font-size: 1.6rem;
+}
+
+.carousel-item.active,
+.carousel-item-next,
+.carousel-item-prev {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.cid-r4Kx8mUfks {
+  padding-top: 30px;
+  padding-bottom: 30px;
+  background-color: none;
+}
+.cid-r4Kx8mUfks .carousel-item {
+  justify-content: center;
+}
+.cid-r4Kx8mUfks .carousel-item.active,
+.cid-r4Kx8mUfks .carousel-item-next,
+.cid-r4Kx8mUfks .carousel-item-prev {
+  display: flex;
+}
+.cid-r4Kx8mUfks .carousel-controls a {
+  transition: opacity .5s;
+  font-size: 2rem;
+}
+.cid-r4Kx8mUfks .carousel-controls a span {
+  position: absolute;
+  top: 180px;
+  padding: 10px;
+  border-radius: 50%;
+  color: #585858;
+  background: #c8c6c6;
+  opacity: .5;
+}
+.cid-r4Kx8mUfks .carousel-controls a:hover span {
+  opacity: 1;
+}
+.cid-r4Kx8mUfks .user_image {
+  width: 200px;
+  height: 200px;
+  margin-bottom: 1.6rem;
+  overflow: hidden;
+  border-radius: 50%;
+  margin: 0 auto 2rem auto;
+}
+.cid-r4Kx8mUfks .user_image img {
+  width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+}
+@media (max-width: 230px) {
+  .cid-r4Kx8mUfks .user_image {
+    width: 100%;
+    height: auto;
+  }
+}
