@@ -1,0 +1,459 @@
+<html>
+    <head>
+        <title>Optima 2k18 :: User Registration</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://www.gstatic.com/firebasejs/5.5.1/firebase-app.js"></script>
+        <script src="https://www.gstatic.com/firebasejs/5.5.1/firebase-auth.js"></script>
+        <script src="https://cdn.firebase.com/libs/firebaseui/2.3.0/firebaseui.js"></script>
+        <link type="text/css" rel="stylesheet" href="https://cdn.firebase.com/libs/firebaseui/2.3.0/firebaseui.css" />
+        <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+        <link rel="stylesheet" type="text/css" href="css/component2.css" />
+        <link rel="stylesheet" media="screen" href="css/style.css">
+        <link rel="stylesheet" media="screen" href="css/style3.css">
+        <link rel="stylesheet" media="screen" href="../css/menu.css">
+
+        <link rel="shortcut icon" type="image/x-icon" href="favi.png">
+        <style>
+            a, button {
+                outline: none;
+            }
+        </style> 
+        <script src="js/modernizr-2.6.2.min.js"></script>      
+        <script>
+        var mobileVer = false;
+        var emailVer = false;
+          // Initialize Firebase
+          var config = {
+            apiKey: "AIzaSyBEPhIHWWldjOrbNkwa_Nmvb-tvMDbufPQ",
+            authDomain: "optima2k18-9b3e7.firebaseapp.com",
+            databaseURL: "https://optima2k18-9b3e7.firebaseio.com",
+            projectId: "optima2k18-9b3e7",
+            storageBucket: "optima2k18-9b3e7.appspot.com",
+            messagingSenderId: "726708348481"
+          };
+          firebase.initializeApp(config);
+          firebase.auth().signOut().then(function() {
+                  console.log('Signed Out');
+                }, function(error) {
+            console.error('Sign Out Error', error);
+         });
+
+            var uiConfig = {
+              signInFlow: 'popup',
+              signInOptions: [{ 
+                  proivder : firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                    recaptchaParameters : {
+                          size : 'normal',
+                    }
+                }], 
+            };
+            
+            var ui = new firebaseui.auth.AuthUI(firebase.auth());
+            ui.start('#firebaseui-container',{
+                'callbacks': {
+                    // Called when the user has been successfully signed in.
+                    'signInSuccessWithAuthResult': function(authResult, redirectUrl) {
+                      if (authResult.user) {
+                    document.querySelector("#registration").style.display = 'block';
+                    document.querySelector("#firebaseui-spa").style.display = 'none';
+                    document.querySelector("#phone").readOnly = true;
+                    document.querySelector("#vphone").innerHTML = 'verified';
+                      }
+                      if (authResult.additionalUserInfo) {
+                        /*document.getElementById('is-new-user').textContent =
+                            authResult.additionalUserInfo.isNewUser ?
+                            'New User' : 'Existing User';*/
+                      }
+                      // Do not redirect.
+                      return false;
+                    }
+                  },
+                signInOptions : 
+                [
+                    {
+                        provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
+                        recaptchaParameters: {
+                            //type: 'image', // 'audio'
+                            size: 'invisible', // 'invisible' or 'compact'
+                            //badge: 'bottomleft' //' bottomright' or 'inline' applies to invisible.
+                        },
+                    defaultCountry: 'IN',
+                    }
+                ]
+            });
+            firebase.auth().onAuthStateChanged(function(user) {
+                if(user) {
+                    mobileVer = true;
+                    hideErr();
+                    document.querySelector("#registration").style.display = 'block';
+                    document.querySelector("#firebaseui-spa").style.display = 'none';
+                    document.querySelector("#phone").readOnly = true;
+                    //document.querySelector("#vphone").innerHTML = 'verified';
+                    document.querySelector("#vphone").setAttribute("style",'color : #1DDF16 !important; padding-left : 10px;');
+                    document.querySelector("#vphone").setAttribute("title",'Phone Number verifed successfully');
+                    document.querySelector("#vphone").setAttribute("onclick",'javascript:void(0)');
+                    document.querySelector("#phoneVerIcon").classList.remove('icon-3d');
+                }
+            });
+            function verifyMobile() {
+                var number = document.querySelector("#phone").value;
+                if(isNaN(Number(number))) 
+                {
+                    showErr(document.querySelector('#phone').value+"is Not a valid phone number");
+                }
+                else if(number.length == 0) {
+                    showErr("Phone Number field cannot be left blank!");
+                }
+                else if(number.length != 10) {
+                    showErr("Invalid Number : Phone number must contain 10 digits. Don't include the country code (+91)");
+                }
+                else{
+                document.querySelector("#registration").style.display = 'none';
+                document.querySelector('#email-box').style.display = 'none';
+                document.querySelector("#firebaseui-spa").style.display = 'block';
+                //document.getElementsByClassName("mdl-textfield__input")[0].value = number;
+                }
+            }
+            function verifyEmail() {
+                
+                //document.querySelector("#emailVerIcon").classList.remove('icon-3d');
+                if(document.querySelector("#email").validity.valid) {
+                document.querySelector("#emailVerIcon").setAttribute("class","fa fa-2x fa-spinner fa-spin");
+                document.querySelector("#emailVerIcon").setAttribute("style","color : #fff; padding-left : 10px;");
+                var req = new XMLHttpRequest();
+                req.open("POST","email-verify.php",true);
+                var data = new FormData();
+                data.append("email",document.querySelector('#email').value);
+                req.onreadystatechange = function() {
+                    if(this.readyState = 4 && this.status == 200) {
+                        if(this.responseText == 'true') {
+                            document.querySelector('#registration').style.display = 'none';
+                            document.querySelector("#firebaseui-spa").style.display = 'none';
+                            document.querySelector('#email-box').style.display = 'block';
+                        }
+                        else if(this.responseText.indexOf('Duplicate') > -1) {
+                            showErr("The user associated with this email adress has already registered!");
+                        }
+                        else {
+                            document.querySelector("#emailVerIcon").setAttribute("class","fa fa-2x fa-check-circle icon-3d");
+                            document.querySelector("#emailVerIcon").setAttribute("style","");
+                            showErr(this.responseText);
+                        }
+                    }
+                }
+                req.send(data);
+                }
+                else {
+                    showErr("'"+document.querySelector("#email").value+"' is not a valid Email Adress");
+                }
+            }
+            function matchOTP() {
+                var req = new XMLHttpRequest();
+                req.open('POST',"match-otp.php",true);
+                var data = new FormData();
+                data.append("email",document.querySelector('#email').value);
+                data.append("otp",document.querySelector('#otp').value);
+                req.onreadystatechange = function() {
+                    if(this.readyState = 4 && this.status == 200) {
+                        if(document.querySelector("#otp").value.length == 0){
+                            document.querySelector("#otperr").innerHTML = "OTP Cannt be blank!"
+                        }
+                        else if(this.responseText == "true") {
+                            emailVer = true;
+                            hideErr();
+                            document.querySelector('#registration').style.display = 'block';
+                            document.querySelector('#email-box').style.display = 'none';
+                            document.querySelector("#email").readOnly = true;
+                            //document.querySelector("#vem").setAttribute("style",'color : #1DDF16 !important; padding-left : 10px;');
+                            document.querySelector("#vem").setAttribute("title",'Email Verified Successfully');
+                            document.querySelector("#emailVerIcon").setAttribute("class","fa fa-2x fa-check-circle");
+                            document.querySelector("#emailVerIcon").setAttribute("style","color : #1DDF16 !important;; padding-left : 10px;");                            
+                            document.querySelector("#vem").setAttribute("onclick",'javascript:void(0)');
+                        }
+                        else if (this.responseText == "false"){
+                            document.querySelector("#otperr").innerHTML = "Invalid OTP! This doesn't mach the otp we sent you."
+                        }
+                        else {
+                            document.querySelector("#otperr").innerHTML = this.responseText;  
+                        }
+                    }
+                }
+                req.send(data);   
+            }
+            function register() {
+                var name = document.querySelector("#name").value;
+                var college = document.querySelector("#college").value;
+                var phone = document.querySelector("#phone").value;
+                var email = document.querySelector("#email").value;
+                if(!emailVer && !mobileVer) {
+                    showErr("Email or Mobile Number is not verified. Verify it first");
+                }
+                else if(name.length == 0 || college.length == 0 || phone.length == 0 || email.length == 0) {
+                    showErr("One or more fields have been left blank");
+                }
+                else {
+                document.querySelector("#rgstr").classList.add('glow');
+                var req = new XMLHttpRequest();
+                req.open("POST","register.php",true);
+                req.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200) {
+                        console.log(this.responseText);
+                        if(this.responseText == "true") {
+                            document.querySelector("#rgstr").classList.remove('glow');
+                            document.querySelector("#rgstr").setAttribute("style","color : #fff;vertical-align : middle; font-size : 5vh; text-align : center; font-family : 'Roboto', sans serif;");
+                            document.querySelector("#rgstr").innerHTML = "<legend class = 'legend'>Registration</legend><br><br><br>Congratulations! Your registration for Optima 2018 was succesful";
+                            document.querySelector("#rgstr").setAttribute("class","register1");
+                        }
+                        else if(this.responseText.indexOf('Duplicate') > -1) {
+                            showErr("The user is already Registered");
+                        }
+                        else {
+                            showErr("Registration Failed : "+this.responseText);
+                        }
+                    }
+                }
+                var data = new FormData();
+                data.append("name",name);
+                data.append("college",college);
+                data.append("phone",phone);
+                data.append("email",email);
+                req.send(data);
+                }
+            }
+            function collegeNames(inp) {
+				var name = inp.value;
+				var req = new XMLHttpRequest();
+				req.open("GET","college.php?name="+name,true);
+				req.onreadystatechange = function() {
+					if(this.readyState == 4 && this.status == 200) {
+						if(this.responseText == "false");
+						else {
+							var names = this.responseText;
+							names = names.split(',');
+							autocomplete(inp,names);
+						}
+					}
+				}
+				req.send();
+            }
+            function autocomplete(inp,arr) {
+				  /*the autocomplete function takes two arguments,
+				  the text field element and an array of possible autocompleted values:*/
+				  var currentFocus;
+				  /*execute a function when someone writes in the text field:*/
+				  inp.addEventListener("input", function(e) {
+					  var a, b, i, val = this.value;
+					  /*close any already open lists of autocompleted values*/
+					  closeAllLists();
+					  if (!val) { return false;}
+					  currentFocus = -1;
+					  /*create a DIV element that will contain the items (values):*/
+					  a = document.createElement("DIV");
+					  a.setAttribute("id", this.id + "autocomplete-list");
+					  a.setAttribute("class", "autocomplete-items");
+					  /*append the DIV element as a child of the autocomplete container:*/
+					  this.parentNode.appendChild(a);
+					  /*for each item in the array...*/
+					  for (i = 0; i < arr.length; i++) {
+						/*check if the item starts with the same letters as the text field value:*/
+						if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
+						  /*create a DIV element for each matching element:*/
+						  b = document.createElement("DIV");
+						  /*make the matching letters bold:*/
+						  b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
+						  b.innerHTML += arr[i].substr(val.length);
+						  /*insert a input field that will hold the current array item's value:*/
+						  b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
+						  /*execute a function when someone clicks on the item value (DIV element):*/
+						  b.addEventListener("click", function(e) {
+							  /*insert the value for the autocomplete text field:*/
+							  inp.value = this.getElementsByTagName("input")[0].value;
+							  /*close the list of autocompleted values,
+							  (or any other open lists of autocompleted values:*/
+							  closeAllLists();
+						  });
+						  a.appendChild(b);
+						}
+					  }
+				  });
+				  /*execute a function presses a key on the keyboard:*/
+				  inp.addEventListener("keydown", function(e) {
+					  var x = document.getElementById(this.id + "autocomplete-list");
+					  if (x) x = x.getElementsByTagName("div");
+					  if (e.keyCode == 40) {
+						/*If the arrow DOWN key is pressed,
+						increase the currentFocus variable:*/
+						currentFocus++;
+						/*and and make the current item more visible:*/
+						addActive(x);
+					  } else if (e.keyCode == 38) { //up
+						/*If the arrow UP key is pressed,
+						decrease the currentFocus variable:*/
+						currentFocus--;
+						/*and and make the current item more visible:*/
+						addActive(x);
+					  } else if (e.keyCode == 13) {
+						/*If the ENTER key is pressed, prevent the form from being submitted,*/
+						e.preventDefault();
+						if (currentFocus > -1) {
+						  /*and simulate a click on the "active" item:*/
+						  if (x) x[currentFocus].click();
+						}
+					  }
+				  });
+				  function addActive(x) {
+					/*a function to classify an item as "active":*/
+					if (!x) return false;
+					/*start by removing the "active" class on all items:*/
+					removeActive(x);
+					if (currentFocus >= x.length) currentFocus = 0;
+					if (currentFocus < 0) currentFocus = (x.length - 1);
+					/*add class "autocomplete-active":*/
+					x[currentFocus].classList.add("autocomplete-active");
+				  }
+				  function removeActive(x) {
+					/*a function to remove the "active" class from all autocomplete items:*/
+					for (var i = 0; i < x.length; i++) {
+					  x[i].classList.remove("autocomplete-active");
+					}
+				  }
+				  function closeAllLists(elmnt) {
+					/*close all autocomplete lists in the document,
+					except the one passed as an argument:*/
+					var x = document.getElementsByClassName("autocomplete-items");
+					for (var i = 0; i < x.length; i++) {
+					  if (elmnt != x[i] && elmnt != inp) {
+						x[i].parentNode.removeChild(x[i]);
+					  }
+					}
+				  }
+				  /*execute a function when someone clicks in the document:*/
+				  document.addEventListener("click", function (e) {
+					  closeAllLists(e.target);
+				  });
+                }
+                
+                function showErr(err) {
+                    document.querySelector('#err').innerHTML = err;
+                    document.querySelector('#err').style.display = 'block';
+                }
+                function hideErr(){
+                    document.querySelector("#err").style.display = 'none';
+                }
+        </script>
+        <style>
+          
+        </style>
+    </head>
+    <body>
+            <div id="particles-js">
+                </div>
+                <div id="mySidenav" class="sidenav">
+                        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+                        <a href="/opt2/optima">Home</a>
+                        <a href="/opt2/optima/event.php">Events</a>
+                        <a href="/opt2/optima/workshop.php">sponsors</a>
+                      
+                        <a href="/opt2/optima/about">About us</a>
+                        <a href="/opt2/optima/contactus.php">contact us</a>
+                        <a href="/opt2/optima/Register">Registration</a>
+                        <a href="/opt2/optima/workshop.php">Workshop</a>
+                        <a href="/opt2/optima/gallery.php">Gallery</a>
+                        <a href="/opt2/optima/workshop.php"> Exhibitione </a>
+                      
+                      
+                      
+                      </div>
+                      
+                      <span  style="font-size:30px;cursor:pointer;z-index:3;color:white;float:left;margin:0;" onclick="openNav()">&#9776; </span>
+                      
+                      <script>
+                      function openNav() {
+                          document.getElementById("mySidenav").style.width = "250px";
+                      }
+                      
+                      function closeNav() {
+                          document.getElementById("mySidenav").style.width = "0";
+                      }
+                      </script>
+            <div class = "container">
+            <div class = "header">
+                <img src="images/nittlogo.png" alt="NITT LOGO" id="nitt">
+                <img src="images/text.png" alt="NITT LOGO" id="text">
+                <img src="images/logo.png" alt="NITT LOGO" id="optima">
+            </div>
+            <div id = "instruction">
+                <fieldset class = "register1">
+                    <legend class="legend">
+                        Registration
+                    </legend>
+                    <br>
+                    <h3 align = "center"><u>Instructions for filling the Registration form</u></h3>
+                    <p>
+                        <ol>
+                            <li>
+                                This page is only for the purpose of User Registration. Team Registration for various events will be done on the day of the event.
+                            </li>
+                            <li>
+                                In the College Name field, enter the full name of your College/Institute/University. Do not use abbreviations. Use Abbreviations
+                                if and only if the name of your college exceeds 200 characters in length. 
+                            </li>
+                            <li>
+                                Enter a valid email adress. You'll need to verify your email adress. Enter an email adress that you currently have access to
+                            </li>
+                            <li>
+                                Enter a valid phone number. You'll need to verify your phone number. Enter a phone number on which you can recieve text messages
+                            </li>
+                        </ol>
+                    </p>
+                    <button onclick="document.querySelector('#instruction').style.display = 'none'; document.querySelector('#registration').style.display = 'block';">I understand</button>
+                </fieldset>      
+            </div>
+            <div id = "registration" style = "display : none;">
+                <fieldset class = "register" id = "rgstr">
+                    <legend class="legend">
+                        Registration
+                    </legend>
+                        <p style = "color : rgb(250,50,109) !important; display : none;" id = "err"></p>
+                        <input type = "text" placeholder="Name" id = "name" required> <br>
+                        <div class = "auto-complete">
+                           <input type = "text" placeholder="College/University" id = "college" onkeyup="collegeNames(this)" required>   
+                        </div>
+                        <input type = "text" placeholder="Phone Number" id = "phone" required><span id = "vphone" onclick = "verifyMobile()" title = "Verify Mobile Number" ><i id = "phoneVerIcon" class="fa fa-2x fa-check-circle icon-3d"></i></span>
+                        <input type = "email" placeholder="E-Mail" id = "email" required><span id = "vem" onclick="verifyEmail()" title = "Verify Email-Id"><i id = "emailVerIcon" class="fa fa-2x fa-check-circle icon-3d"></i></span>
+                        <button onclick="register()">Register</button>
+                </fieldset>
+                </div>
+            </div>
+            <div id = "firebaseui-spa" class = "hidden">
+                 <div id = "firebaseui-container">
+
+                 </div>
+                </div>
+            <div class = "register" id="email-box" style = "display : none; top: 140px;">
+                <input type="text" placeholder = "Enter OTP" id = 'otp'>
+                <p style = "color : #E40D43; font-size : 15px; padding-left : 7px" id = "otperr"></p>
+                <button onclick = "matchOTP()">Verify</button>
+            </div>
+            <div class="footer">
+                    <div class="flex-center">
+                        <i class="fa fa-twitter fa-2x icon-3d"></i>
+                        <i class="fa fa-facebook fa-2x icon-3d"></i>
+                        <i class="fa fa-instagram fa-2x icon-3d"></i>
+                        <i class="fa fa-whatsapp fa-2x icon-3d"></i>
+                    </div>
+                    <p>Made with ❤️ by &#960 club. 	&copy; MSC. Department of Computer Applications 2018.</p>
+                </div>
+                <script>
+                    document.getElementsByClassName('firebaseui-id-secondary-link')[0].addEventListener('click',function(){
+                        document.querySelector("#registration").style.display = 'block';
+                        document.querySelector("#firebaseui-spa").style.display = 'none';
+                    });
+                </script>
+                <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+                <script  src="js/index.js"></script>
+            </div>
+        </div>
+    </body>
+</html>
